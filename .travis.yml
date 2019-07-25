@@ -4,4 +4,5 @@ node_js:
 cache: yarn
 script:
   - echo 'Build starts...'
+  - mkdir dist
   - npm run prod
