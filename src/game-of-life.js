@@ -7,29 +7,37 @@
 
   var context = canvas.getContext('2d')
 
-  var Board = function (rows, cols, fn) {
-    this.rows = rows
-    this.cols = cols
+  var Life = function (rows, cols, callback) {
     this.cells = []
-    this.reset()
-    this.each(fn)
+    if (rows && cols && callback) {
+      this.fill(rows, cols, callback)
+    }
   }
-  Board.prototype = {
-    reset: function () {
-      for (var i = 0; i < this.cols; i++) {
-        this.cells[i] = []
-      }
+  Life.prototype = {
+    cols: function () {
+      return this.cells.length
     },
-    each: function (fn) {
-      for (var i = 0; i < this.cols; i++) {
-        for (var j = 0; j < this.rows; j++) {
-          this.cells[i][j] = fn ? fn(i, j) : 0
+    rows: function () {
+      return this.cols() > 0 ? this.cells[0].length : 0
+    },
+    cell: function (x, y) {
+      var top = y >= 0
+      var left = x >= 0
+      var right = x < this.cols()
+      var bottom = y < this.rows()
+      return left && right && top && bottom ? this.cells[x][y] : 0
+    },
+    fill: function (rows, cols, callback) {
+      for (var x = 0; x < cols; x++) {
+        this.cells[x] = []
+        for (var y = 0; y < rows; y++) {
+          this.cells[x][y] = callback(x, y)
         }
       }
     },
     next: function () {
       var self = this
-      return new Board(self.cols, self.rows, function (x, y) {
+      return new Life(this.rows(), this.cols(), function (x, y) {
         var neighbors = self.neighbors(x, y)
         var state = self.cells[x][y]
         switch (state) {
@@ -40,32 +48,28 @@
       })
     },
     neighbors: function (x, y) {
-      var left = Math.max(0, x - 1)
-      var top = Math.max(0, y - 1)
-      var right = Math.min(this.cols - 1, x + 1)
-      var bottom = Math.min(this.rows - 1, y + 1)
-      var neighbors = 0
-      for (var dx = left; dx <= right; dx++) {
-        for (var dy = top; dy <= bottom; dy++) {
-          if (dx === x && dy === y) continue
-          neighbors += this.cells[dx][dy]
-        }
-      }
-      return neighbors
+      return this.cell(x, y - 1) +
+             this.cell(x, y + 1) +
+             this.cell(x - 1, y - 1) +
+             this.cell(x - 1, y) +
+             this.cell(x - 1, y + 1) +
+             this.cell(x + 1, y - 1) +
+             this.cell(x + 1, y) +
+             this.cell(x + 1, y + 1)
     },
     draw: function (context) {
-      var self = this
       context.clearRect(0, 0, 500, 500)
       context.fillStyle = 'black'
-      this.each(function (x, y) {
-        var state = self.cells[x][y]
-        if (state === 1) {
-          var xpos = x * 5
-          var ypos = y * 5
-          context.fillRect(xpos, ypos, 5, 5)
+      for (var x = 0; x < this.cols(); x++) {
+        for (var y = 0; y < this.rows(); y++) {
+          var state = this.cells[x][y]
+          if (state === 1) {
+            var xpos = x * 5
+            var ypos = y * 5
+            context.fillRect(xpos, ypos, 5, 5)
+          }
         }
-        return state
-      })
+      }
     }
   }
 
@@ -77,6 +81,7 @@
       for (var i = 0; i < tasks.length; i++) {
         tasks[i]()
       }
+
       /* requestId = */window.requestAnimationFrame(function () { tick() })
     }
 
@@ -97,12 +102,12 @@
     }
   })()
 
-  var board = new Board(100, 100, function (x, y) {
+  var life = new Life(100, 100, function () {
     return Math.random() > 0.5 ? 1 : 0
   })
 
   Timer.schedule(function () {
-    board.draw(context)
-    board = board.next()
+    life.draw(context)
+    life = life.next()
   })
 }())
