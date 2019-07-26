@@ -1,14 +1,18 @@
 {
-  "name": "game-of-life",
+  "name": "gameoflife",
   "version": "1.0.0",
   "author": "Georg",
   "license": "MIT",
   "scripts": {
-    "dev": "browserify -d src/game-of-life.js > dist/$npm_package_name-$npm_package_version.js --verbose",
-    "prod": "browserify src/game-of-life.js -p [ minifyify --no-map --uglify [ --mangle [ 'toplevel' ] ] ] > dist/$npm_package_name-$npm_package_version.min.js"
+    "dev": "browserify -d src/index.js > dist/$npm_package_name-$npm_package_version.js --verbose",
+    "prod": "browserify src/index.js -p [ minifyify --no-map --uglify [ --mangle [ 'toplevel' ] ] ] > dist/$npm_package_name-$npm_package_version.min.js"
   },
   "dependencies": {
     "browserify": "^16.3.0",
     "minifyify": "^7.3.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/georggoetz/gameoflife-js"
   }
 }
