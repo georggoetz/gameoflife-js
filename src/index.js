@@ -1,18 +1,16 @@
 var Life = require('./life.js')
-var LifeView = require('./life-view.js')
-var Timer = require('./timer.js');
+var LifeController = require('./life-controller.js')
+var LifeView = require('./life-view.js').LifeView
+
+var ROWS = 100
+var COLS = 100;
 
 (function () {
   'use strict'
 
-  var canvas = document.getElementById('animCvs')
-  canvas.width = 500
-  canvas.height = 500
-
-  var life = Life.from(100, 100, function () { return Math.random() > 0.5 ? 1 : 0 })
-  var lifeView = new LifeView(life, canvas)
-
-  Timer.schedule(function () {
-    life.next()
-  })
+  var lifeDiv = document.getElementById('life')
+  var life = Life.from(ROWS, COLS, function () { return Math.random() > 0.5 ? 1 : 0 })
+  var lifeView = new LifeView(life, lifeDiv)
+  var lifeController = new LifeController(life, lifeView)
+  lifeController.play()
 }())

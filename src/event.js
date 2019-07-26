@@ -1,25 +1,25 @@
 'use strict'
 
-var Event = function (source) {
-  this.source = source
-  this.listeners = []
+var Event = function (publisher) {
+  this.publisher = publisher
+  this.subscribers = []
 }
 
 Event.prototype = {
-  add: function (listener) {
-    if (this.listeners.indexOf(listener) < 0) {
-      this.listeners.push(listener)
+  subscribe: function (subscriber) {
+    if (this.subscribers.indexOf(subscriber) < 0) {
+      this.subscribers.push(subscriber)
     }
   },
-  remove: function (listener) {
-    var index = this.listeners.indexOf(listener)
+  unsubscribe: function (subscriber) {
+    var index = this.subscribers.indexOf(subscriber)
     if (index > -1) {
-      this.listeners.splice(index, 1)
+      this.subscribers.splice(index, 1)
     }
   },
   fire: function (args) {
-    var source = this.source
-    this.listeners.forEach(function (listener) { listener(source, args) })
+    var publisher = this.publisher
+    this.subscribers.forEach(function (subscriber) { subscriber(publisher, args) })
   }
 }
 
