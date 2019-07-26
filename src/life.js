@@ -6,6 +6,7 @@ var Life = function (cells) {
   this.cells = cells || []
   this.changed = new Event(this)
 }
+
 Life.prototype = {
   cols: function () {
     return this.cells.length

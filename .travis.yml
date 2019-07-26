@@ -5,7 +5,7 @@ cache: yarn
 script:
   - echo 'Build starts...'
   - mkdir -p dist
-  - npm run prod
+  - npm run build
   - ls dist
 deploy:
   provider: pages

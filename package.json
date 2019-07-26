@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "browserify -d src/index.js > dist/$npm_package_name-$npm_package_version.js --verbose",
-    "prod": "browserify src/index.js -p [ minifyify --no-map --uglify [ --mangle [ 'toplevel' ] ] ] > dist/$npm_package_name-$npm_package_version.min.js"
+    "build": "browserify src/index.js -p [ minifyify --no-map --uglify [ --mangle [ 'toplevel' ] ] ] > dist/$npm_package_name-$npm_package_version.min.js",
+    "watch": "watchify src/index.js -p [ minifyify --no-map --uglify [ --mangle [ 'toplevel' ] ] ] -o dist/$npm_package_name-$npm_package_version.min.js"
   },
   "dependencies": {
     "browserify": "^16.3.0",
