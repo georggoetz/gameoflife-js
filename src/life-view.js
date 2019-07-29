@@ -8,16 +8,12 @@ var TXT_PAUSE = 'Pause'
 var TXT_PLAY = 'Play'
 var TXT_RESET = 'Reset'
 
-var LifeViewStates = Object.freeze({
-  PLAYING: 'playing',
-  PAUSED: 'paused'
-})
-
 var LifeView = function (life, lifeDiv) {
   this.life = life
   this.lifeDiv = lifeDiv
   this.playButtonClicked = new Event(this)
   this.resetButtonClicked = new Event(this)
+  this.frequencyRangeChanged = new Event(this)
 
   this.init()
 }
@@ -36,51 +32,38 @@ LifeView.prototype = {
 
     // Play/Pause button
     this.playButton = document.createElement('button')
+    this.playButton.addEventListener('click', function () {
+      this.playButtonClicked.fire()
+    }.bind(this))
     this.controlsDiv.appendChild(this.playButton)
 
     // Reset button
     this.resetButton = document.createElement('button')
     this.resetButton.innerText = TXT_RESET
+    this.resetButton.addEventListener('click', function () {
+      this.resetButtonClicked.fire()
+    }.bind(this))
     this.controlsDiv.appendChild(this.resetButton)
 
     // Subscribe to events
     this.life.changed.subscribe(this.draw.bind(this))
 
-    // Publish events
-    this.playButton.addEventListener('click', function () {
-      this.playButtonClicked.fire()
-    }.bind(this))
-    this.resetButton.addEventListener('click', function () {
-      this.resetButtonClicked.fire()
-    }.bind(this))
-
-    this.change(LifeViewStates.PAUSED)
+    this.setPaused()
   },
-  change: function (viewState) {
-    switch (viewState) {
-      case LifeViewStates.PLAYING:
-        this.playButton.innerText = TXT_PAUSE
-        break
-      case LifeViewStates.PAUSED:
-        this.playButton.innerText = TXT_PLAY
-        break
-    }
-  },
+  setPaused: function () { this.playButton.innerText = TXT_PLAY },
+  setPlaying: function () { this.playButton.innerText = TXT_PAUSE },
   draw: function (life) {
     var context = this.canvas.getContext('2d')
     context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     context.fillStyle = 'black'
-    for (var x = 0; x < life.cols(); x++) {
-      for (var y = 0; y < life.rows(); y++) {
-        var state = this.life.cell(x, y)
+    this.life.cells.forEach(function (col, x) {
+      return col.forEach(function (state, y) {
         if (state === 1) {
-          var xpos = x * 5
-          var ypos = y * 5
-          context.fillRect(xpos, ypos, 5, 5)
+          context.fillRect(x * 5, y * 5, 5, 5)
         }
-      }
-    }
+      })
+    })
   }
 }
 
-module.exports = { LifeView, LifeViewStates }
+module.exports = LifeView

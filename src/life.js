@@ -8,19 +8,6 @@ var Life = function (cells) {
 }
 
 Life.prototype = {
-  cols: function () {
-    return this.cells.length
-  },
-  rows: function () {
-    return this.cols() > 0 ? this.cells[0].length : 0
-  },
-  cell: function (x, y) {
-    var top = y >= 0
-    var left = x >= 0
-    var right = x < this.cols()
-    var bottom = y < this.rows()
-    return left && right && top && bottom ? this.cells[x][y] : 0
-  },
   next: function () {
     this.cells = this.cells.map(function (col, x) {
       return col.map(function (state, y) {
@@ -35,14 +22,18 @@ Life.prototype = {
     this.changed.fire()
   },
   neighbors: function (x, y) {
-    return this.cell(x, y - 1) +
-           this.cell(x, y + 1) +
-           this.cell(x - 1, y - 1) +
-           this.cell(x - 1, y) +
-           this.cell(x - 1, y + 1) +
-           this.cell(x + 1, y - 1) +
-           this.cell(x + 1, y) +
-           this.cell(x + 1, y + 1)
+    return [
+      [x, y - 1],
+      [x, y + 1],
+      [x - 1, y - 1],
+      [x - 1, y],
+      [x - 1, y + 1],
+      [x + 1, y - 1],
+      [x + 1, y],
+      [x + 1, y + 1]
+    ].map(function ([x, y]) {
+      return this.cells[x] && this.cells[x][y] ? this.cells[x][y] : 0
+    }, this).reduce(function (sum, val) { return sum + val })
   }
 }
 

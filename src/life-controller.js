@@ -1,36 +1,40 @@
 'use strict'
 
-var Timer = require('./timer.js')
-var LifeViewStates = require('./life-view.js').LifeViewStates
-
 var LifeController = function (life, lifeView) {
   this.life = life
   this.lifeView = lifeView
   this.initialState = life.cells
+  this.playing = false
 
   this.init()
 }
 
 LifeController.prototype = {
   init: function () {
-    Timer.schedule(function () { this.life.next() }.bind(this))
-
-    this.lifeView.playButtonClicked.subscribe(this.play.bind(this))
+    this.lifeView.playButtonClicked.subscribe(this.togglePlay.bind(this))
     this.lifeView.resetButtonClicked.subscribe(this.reset.bind(this))
+
+    this.animate()
   },
-  play: function () {
-    if (Timer.isTicking()) {
-      Timer.stop()
-      this.lifeView.change(LifeViewStates.PAUSED)
+  togglePlay: function (lifeView) {
+    if (this.playing) {
+      this.playing = false
+      lifeView.setPaused()
     } else {
-      Timer.start()
-      this.lifeView.change(LifeViewStates.PLAYING)
+      this.playing = true
+      lifeView.setPlaying()
     }
   },
-  reset: function () {
+  reset: function (lifeView) {
     this.life.cells = this.initialState
-    if (!Timer.isTicking()) {
-      this.lifeView.draw(this.life)
+    if (!this.playing) {
+      lifeView.draw(this.life)
+    }
+  },
+  animate: function () {
+    window.requestAnimationFrame(this.animate.bind(this))
+    if (this.playing) {
+      this.life.next()
     }
   }
 }
