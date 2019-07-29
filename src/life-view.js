@@ -13,7 +13,7 @@ var LifeView = function (life, lifeDiv) {
   this.lifeDiv = lifeDiv
   this.playButtonClicked = new Event(this)
   this.resetButtonClicked = new Event(this)
-  this.frequencyRangeChanged = new Event(this)
+  this.throttleChanged = new Event(this)
 
   this.init()
 }
@@ -44,6 +44,18 @@ LifeView.prototype = {
       this.resetButtonClicked.fire()
     }.bind(this))
     this.controlsDiv.appendChild(this.resetButton)
+
+    // Speed SLider
+    this.throttleSlider = document.createElement('input')
+    this.throttleSlider.setAttribute('type', 'range')
+    this.throttleSlider.addEventListener('change', function () {
+      this.throttleChanged.fire()
+    }.bind(this))
+    this.controlsDiv.appendChild(this.throttleSlider)
+
+    // Frequency label
+    this.frequencyLabel = document.createElement('label')
+    this.controlsDiv.appendChild(this.frequencyLabel)
 
     // Subscribe to events
     this.life.changed.subscribe(this.draw.bind(this))
