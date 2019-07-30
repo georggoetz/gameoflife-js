@@ -38,8 +38,8 @@ Life.prototype = {
 }
 
 Life.from = function (rows, cols, callback) {
-  return new Life(Array.from({ length: 100 }, function (x) {
-    return Array.from({ length: 100 }, function (y) {
+  return new Life(Array.from({ length: cols }, function (x) {
+    return Array.from({ length: rows }, function (y) {
       return callback(x, y)
     })
   }))
